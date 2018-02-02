@@ -1,0 +1,27 @@
+[parity]
+# Ropsten Test Network
+chain = "ropsten"
+
+[network]
+# Parity will listen for connections on port 40404.
+port = 40404
+# Parity will try to maintain connection to at least 50 peers.
+min_peers = 50
+# Parity will maintain at most 100 peers.
+max_peers = 100
+# Parity will use UPNP to detect your public IP address.
+#nat = "upnp"
+nat = "extip:46.24.98.252"
+
+[footprint]
+# Increase performance on HDD.
+db_compaction = "hdd"
+
+[rpc]
+# Only selected APIs will be exposed over this interface.
+apis = ["web3", "eth", "net", "parity", "traces", "rpc", "secretstore", "personal"]
+
+[ipc]
+# Only selected APIs will be exposed over this interface.
+apis = ["web3", "eth", "net", "parity", "traces", "rpc", "secretstore", "personal"]
+

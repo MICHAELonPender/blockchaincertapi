@@ -1,0 +1,4 @@
+Faucets:
+  Bitcoin: https://testnet.manu.backend.hamburg/faucet
+  Litecoin: http://testnet.thrasher.io/
+  Ethereum: http://faucet.ropsten.be:3001/
