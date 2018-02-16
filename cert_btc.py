@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from crypto_cert.engine import CryptoEngineBitcoin
-import time
 
 if __name__ == "__main__":
     engine = CryptoEngineBitcoin(url="http://test:test@localhost:8333")

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from crypto_cert.engine import CryptoEngineEthereum
-import time
 import sys
 
 if __name__ == "__main__":
@@ -19,8 +18,3 @@ if __name__ == "__main__":
     print("Waiting confirmations")
 
     engine.show_status_until_confirm(engine, txid)
-    #while True:
-    #    status = engine.cert_status(txid)
-    #    ts = time.time()
-    #    print("Status: %d: %s: %s" % (ts, engine.minify_tx(txid), status["msg"]))
-    #    time.sleep(1)

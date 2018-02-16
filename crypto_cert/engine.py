@@ -58,7 +58,7 @@ class CryptoEngine(ABC):
 
     @staticmethod
     def minify_tx(txid: str) ->str:
-        if len(txid) > 16:
+        if len(txid) > 14:
             return txid[:6]+".."+txid[-6:]
 
         return txid
