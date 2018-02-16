@@ -4,11 +4,12 @@ from crypto_cert.engine import CryptoEngineBitcoin
 import time
 
 if __name__ == "__main__":
-    params = {
-        "url": "http://test:test@127.0.0.1:8383"
-    }
+    engine = CryptoEngineBitcoin(url="http://test:test@localhost:8333")
 
-    engine = CryptoEngineBitcoin(params)
+    engine.lock()
+    print("Is Locked:",engine.is_locked())
+    result = engine.unlock(password = "clave", timeout = 120)
+    print("Is Locked:",engine.is_locked())
 
     hash = "PRUEBA PAYLOAD BLOCKCHAIN 123456".encode()
 
@@ -17,9 +18,4 @@ if __name__ == "__main__":
     print("Sent to blockchain with txid:",txid)
     print("Waiting confirmations")
 
-    while True:
-        status = engine.cert_status(txid)
-        ts = time.time()
-        print("Status: %d: %s: %s" % (ts, txid, status["msg"]))
-        time.sleep(1)
-
+    engine.show_status_until_confirm(engine, txid)
