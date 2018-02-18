@@ -24,10 +24,24 @@ class CryptoEngine(ABC):
 
     @abstractmethod
     def certify(self, data: bytes) -> str:
+        """
+        Certifica un documento
+        :param data: Hash del documento a certificar en cadena de bytes de 1 a 32
+        :return: El ID de la transacción
+        """
         pass
 
     @abstractmethod
     def cert_status(self, txid: str):
+        """
+        Comprueba el estado de certificación de un documento
+        :param txid: El id de la transacción
+        :return: Un objeto dict con los campos status que puede ser
+                STATUS_CONFIRMED: Transacción completamente confirmada
+                STATUS_NOT_FOUND: Transacción no encontrada
+                STATUS_IN_MEMPOOL: Transacción todavía no minada
+                STATUS_PARTIALLY_CONFIRMED: Transacción en blockchain pero con insuficientes confirmaciones
+        """
         pass
 
     @abstractmethod
@@ -36,13 +50,27 @@ class CryptoEngine(ABC):
 
     @abstractmethod
     def unlock(self, password = None, timeout = None) -> bool:
+        """
+        Desbloquea la cartera con el password indicado
+        :param password: El password de desbloqueo
+        :param timeout: La cantidad de segundos que permanecera desbloqueado
+        :return: True si el desbloqueo se pudo realizar y False en caso contrario
+        """
         pass
 
     @abstractmethod
     def is_locked(self) -> bool:
+        """
+        Comprueba si la cartera está bloqueada
+        :return: True si esta bloqueada False en caso contrario
+        """
         pass
 
     def generate_result(self, status = None, msg = None, confirmations = None):
+        """
+        Funcion auxiliar para generar el resultado de cert_statos
+        :return: Un objeto dict con el estado de la transacción
+        """
         if status is None:
             raise ValueError("Status cannot be None")
 
@@ -58,12 +86,23 @@ class CryptoEngine(ABC):
 
     @staticmethod
     def minify_tx(txid: str) ->str:
+        """
+        Muestra el ID de transacción simplificado para que sea más como de leer
+        :return: Transacción simplificada
+        """
         if len(txid) > 14:
-            return txid[:6]+".."+txid[-6:]
+            return txid[:7] + ".." + txid[-7:]
 
         return txid
 
-    def show_status_until_confirm(self, obj, txid: str) -> str:
+    @staticmethod
+    def show_status_until_confirm(obj, txid: str) -> str:
+        """
+        Método para mostrar como funciona el cert_status, muestra el estado de certificación de una transacción
+        hasta que queda completamente verificada.
+        :param obj Instancia del objeto
+        :param txid ID de transacción
+        """
         while True:
             result = obj.cert_status(txid)
 
@@ -162,7 +201,8 @@ class CryptoEngineBitcoin(CryptoEngine):
         return result
 
     def unlock(self, password = None, timeout = None) -> bool:
-        return self.rpc.walletpassphrase(password, timeout)
+        self.rpc.walletpassphrase(password, timeout)
+        return self.is_locked()
 
     def lock(self):
         return self.rpc.walletlock()
@@ -206,8 +246,6 @@ class CryptoEngineEthereum(CryptoEngine):
         return txidStr
 
     def cert_status(self, txid: str):
-        status = -1
-        msg = None
         tx = self.web3.eth.getTransaction(txid)
         #print("TX:",tx)
         tx_block_number = tx['blockNumber']
@@ -242,7 +280,7 @@ class CryptoEngineEthereum(CryptoEngine):
         return self.web3.personal.unlockAccount(self.__get_account(), password)
 
     def lock(self):
-        return self.rpc.walletlock()
+        return self.web3.personal.lockAccount(self.__get_account())
 
     def is_locked(self) -> bool:
-        self.web3.eth.sign("", self.__get_account())
+        return True # No encontre forma de obtener este dato, asi que asumo que siempre lo esta
