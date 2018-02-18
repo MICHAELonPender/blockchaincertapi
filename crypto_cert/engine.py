@@ -49,6 +49,13 @@ class CryptoEngine(ABC):
         pass
 
     @abstractmethod
+    def lock(self):
+        """
+        Bloquea la cartera
+        """
+        pass
+    
+    @abstractmethod
     def unlock(self, password = None, timeout = None) -> bool:
         """
         Desbloquea la cartera con el password indicado
