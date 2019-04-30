@@ -15,7 +15,7 @@ if __name__ == "__main__":
             print("Cannot unlock the wallet, exiting")
             sys.exit(1)
 
-    hash = "PRUEBA PAYLOAD BLOCKCHAIN 123456".encode()
+    hash = "This a message example".encode()
 
     txid = engine.certify(hash)
 

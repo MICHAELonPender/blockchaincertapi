@@ -9,7 +9,8 @@ import time
 from abc import ABC, abstractmethod
 
 
-DATA_PREFIX = "LEGALPIN:"
+#DATA_PREFIX = "LEGALPIN:"
+DATA_PREFIX = "PYVIGO:"
 
 STATUS_CONFIRMED = 0
 STATUS_NOT_FOUND = 10
@@ -25,22 +26,22 @@ class CryptoEngine(ABC):
     @abstractmethod
     def certify(self, data: bytes) -> str:
         """
-        Certifica un documento
-        :param data: Hash del documento a certificar en cadena de bytes de 1 a 32
-        :return: El ID de la transacción
+        Certify a document
+        :param data: Document's hash to be certified in byte string, length can be up to 32 bytes
+        :return: Transaction ID
         """
         pass
 
     @abstractmethod
     def cert_status(self, txid: str):
         """
-        Comprueba el estado de certificación de un documento
-        :param txid: El id de la transacción
-        :return: Un objeto dict con los campos status que puede ser
-                STATUS_CONFIRMED: Transacción completamente confirmada
-                STATUS_NOT_FOUND: Transacción no encontrada
-                STATUS_IN_MEMPOOL: Transacción todavía no minada
-                STATUS_PARTIALLY_CONFIRMED: Transacción en blockchain pero con insuficientes confirmaciones
+        Check the certification status of a document
+        :param txid: Transaction ID
+        :return: A dict like object with status fields that can be
+                STATUS_CONFIRMED: Transaction fully confirmed
+                STATUS_NOT_FOUND: Transaction not found
+                STATUS_IN_MEMPOOL: Transaction not yet mined
+                STATUS_PARTIALLY_CONFIRMED: Transaction in blockchain but with insufficient confirmations
         """
         pass
 
@@ -51,25 +52,25 @@ class CryptoEngine(ABC):
     @abstractmethod
     def lock(self):
         """
-        Bloquea la cartera
+        Locks the wallet
         """
         pass
-    
+
     @abstractmethod
     def unlock(self, password = None, timeout = None) -> bool:
         """
-        Desbloquea la cartera con el password indicado
-        :param password: El password de desbloqueo
-        :param timeout: La cantidad de segundos que permanecera desbloqueado
-        :return: True si el desbloqueo se pudo realizar y False en caso contrario
+        Unlock wallet using the specified password
+        :param password: Unlock password
+        :param timeout: Amount of seconds it will remain unlocked
+        :return: True if can be unlocked False otherwise
         """
         pass
 
     @abstractmethod
     def is_locked(self) -> bool:
         """
-        Comprueba si la cartera está bloqueada
-        :return: True si esta bloqueada False en caso contrario
+        Check if wallet is locked
+        :return: True if it is blocked False otherwise
         """
         pass
 
@@ -94,8 +95,8 @@ class CryptoEngine(ABC):
     @staticmethod
     def minify_tx(txid: str) ->str:
         """
-        Muestra el ID de transacción simplificado para que sea más como de leer
-        :return: Transacción simplificada
+        Show simplified transaction ID to make it easier to read
+        :return: Minified transaction
         """
         if len(txid) > 14:
             return txid[:7] + ".." + txid[-7:]
@@ -105,10 +106,10 @@ class CryptoEngine(ABC):
     @staticmethod
     def show_status_until_confirm(obj, txid: str) -> str:
         """
-        Método para mostrar como funciona el cert_status, muestra el estado de certificación de una transacción
-        hasta que queda completamente verificada.
-        :param obj Instancia del objeto
-        :param txid ID de transacción
+        Method to show how the cert_status works, shows the certification status of a transaction until it is
+        completely verified.
+        :param obj Object's instance
+        :param txid Transaction ID
         """
         while True:
             result = obj.cert_status(txid)
@@ -138,8 +139,8 @@ class CryptoEngineBitcoin(CryptoEngine):
         self.rpc = AuthServiceProxy(url)
 
     def certify(self, data: bytes) -> str:
-        if len(data) <1 or len(data) > 32:
-            raise ValueError("data length must be > 0 and <= 32")
+        #if len(data) <1 or len(data) > 32:
+        #    raise ValueError("data length must be > 0 and <= 32")
 
         blockchain_payload = DATA_PREFIX.encode() + data
 
@@ -165,7 +166,7 @@ class CryptoEngineBitcoin(CryptoEngine):
 
     def __get_available_coin(self):
         unspent = self.rpc.listunspent()
-        target = None;
+        target = None
         #print("# of unspent entries: %d" % len(unspent))
         for i in range(0, len(unspent)):
             ue = unspent[i]
@@ -242,8 +243,8 @@ class CryptoEngineEthereum(CryptoEngine):
         return accounts[0]
 
     def certify(self, data: bytes):
-        if len(data) <1 or len(data) > 32:
-            raise ValueError("data length must be > 0 and <= 32")
+        #if len(data) <1 or len(data) > 32:
+        #    raise ValueError("data length must be > 0 and <= 32")
 
         addr = self.__get_account()
         blockchain_payload = DATA_PREFIX.encode() + data
